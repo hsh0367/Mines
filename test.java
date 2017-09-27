@@ -3,7 +3,9 @@ import java.util.ArrayList;
 import mineSweeper.*;
 
 public class test {
-	static Oracle oracle = new Oracle(); //
+	static Oracle oracle = new Oracle();
+	static int map[][] = new int[oracle.getBoardSize()][oracle.getBoardSize()];
+	static int mapSize = oracle.getBoardSize();
 
 	/*
 	 * restart() 게임 재 시작 Method 게임 오버 및 클리어 후에는 자동으로 재 시작되지 않으므로 본 Method를 호출하여
@@ -31,10 +33,10 @@ public class test {
 	 * 99
 	 */
 
-	public static void catchMines(int[][] map) {
+	public static void catchMines() {
 		int mid = 0;
 		int count = 0;// 모르는 부분
-
+		int mineCount = 0;
 		ArrayList<Integer> x = new ArrayList<Integer>();
 		ArrayList<Integer> y = new ArrayList<Integer>();
 
@@ -49,56 +51,64 @@ public class test {
 				// map[i][j]
 
 				mid = map[i][j];
-				if (i > 0 && i < map.length) {
-					if (j > 0 && i < map.length) {
-						if (map[i][j] > 0 && map[i][j] < 9) {
-							for (int k = -1; k < 2; k++) {// 모르는 부분에 대한 갯수 파악
-								for (int l = -1; l < 2; l++) {
-									if (map[i + k][j + l] == 9) {
-										count++;
-										x.add(i + k);
-										y.add(j + l);
-									}
+				if (i > 0 && i < map.length - 1 && j > 0 && j < map.length - 1) {
+					if (map[i][j] > 0 && map[i][j] < 9) {
+						for (int k = -1; k < 2; k++) {// 모르는 부분에 대한 갯수 파악
+							for (int l = -1; l < 2; l++) {
+								if (map[i + k][j + l] == 9) {
+									count++;
+									x.add(i + k);
+									y.add(j + l);
+								}
+								if (map[i + k][j + l] == 99) {
+									mineCount++;
 								}
 							}
-							if (count == mid) {
-								for (int n = 0; n < x.size(); n++) {
-									System.out.println(oracle
-											.getRemainedMines());
-									oracle.actionPerform(y.get(n), x.get(n), 1);
-								}
-								oracle.currentStatus();
-							}
-
 						}
+						if ((count - mineCount) == mid) {
+							for (int n = 0; n < x.size(); n++) {
+								System.out.println(oracle.getRemainedMines());
+								updateMap(oracle.actionPerform(y.get(n),
+										x.get(n), 1));
+								System.out.println("catch mines");
+							}
+							oracle.currentStatus();
+							viewMap();
+						}
+
 					}
 				}
-
 			}
+
+		}
+	}
+
+	// 맵업데이트
+	public static void updateMap(ArrayList<Coordinate> a) {
+
+		for (int i = 0; i < a.size(); i++) {
+			map[a.get(i).getY()][a.get(i).getX()] = a.get(i).getValue();
 		}
 
 	}
 
-	public static int[][] makeMep(int size, ArrayList<Coordinate> a) { // 맵을
-																		// 제작
-																		// 한다.
-
-		int map[][] = new int[size][size];
-		for (int i = 0; i < size; i++) {
-			for (int j = 0; j < size; j++) {
-				map[i][j] = 9;
-			}
-		}
-		for (int i = 0; i < a.size(); i++) {
-			map[a.get(i).getY()][a.get(i).getX()] = a.get(i).getValue();
-		}
-		for (int i = 0; i < size; i++) {
-			for (int j = 0; j < size; j++) {
+	public static void viewMap() {
+		for (int i = 0; i < mapSize; i++) {
+			for (int j = 0; j < mapSize; j++) {
 				System.out.print(map[i][j] + " ");
 			}
 			System.out.println();
 		}
-		return map;
+	}
+
+	public static void makeMap() { // 맵을
+									// 제작
+									// 한다.
+		for (int i = 0; i < mapSize; i++) {
+			for (int j = 0; j < mapSize; j++) {
+				map[i][j] = 9;
+			}
+		}
 	}
 
 	public static void main(String[] args) {
@@ -108,7 +118,7 @@ public class test {
 		int y = 0;
 		int size = oracle.getBoardSize();
 		boolean loop = true;
-
+		makeMap();
 		while (loop) {
 			x = (int) (Math.random() * (size - 1));
 			y = (int) (Math.random() * (size - 1));
@@ -116,11 +126,13 @@ public class test {
 			System.out.println(x + " , " + y);
 			temp = oracle.actionPerform(x, y, 0);
 			System.out.println(temp);
+			updateMap(temp);
 			oracle.currentStatus();
-			if (temp.size() > 3)
+			if (temp.size() > 3 || temp.isEmpty())
 				loop = false;
+
 		}
-		catchMines(makeMep(size, temp));
-		oracle.currentStatus();
+		viewMap();
+		catchMines();
 	}
 }
