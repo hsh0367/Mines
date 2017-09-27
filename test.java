@@ -59,9 +59,14 @@ public class test {
 									count++;
 									x.add(i + k);
 									y.add(j + l);
+									System.out.println("countUP " + count + " "
+											+ i + " " + j);
+
 								}
 								if (map[i + k][j + l] == 99) {
 									mineCount++;
+									System.out.println("mineCount " + mineCount
+											+ " " + i + " " + j);
 								}
 							}
 						}
@@ -69,13 +74,19 @@ public class test {
 							for (int n = 0; n < x.size(); n++) {
 								System.out.println(oracle.getRemainedMines());
 								updateMap(oracle.actionPerform(y.get(n),
-										x.get(n), 1));
+										x.get(1), 1));
 								System.out.println("catch mines");
+								x.remove(n);
+								y.remove(n);
 							}
 							oracle.currentStatus();
 							viewMap();
 						}
+						if (mineCount == mid) {
 
+						}
+						count = 0;
+						mineCount = 0;
 					}
 				}
 			}
