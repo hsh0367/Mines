@@ -32,7 +32,6 @@ public class test {
 	 * Value값 설명 해당 좌표 주위에 지뢰 없음: 0 해당 좌표 주위에 지뢰 있음: [주위에 있는 지뢰 수] 해당 좌표가 지뢰임:
 	 * 99
 	 */
-
 	public static void catchMines() {
 		int mid = 0;
 		int count = 0;// 모르는 부분
@@ -49,44 +48,129 @@ public class test {
 			for (int j = 0; j < map.length; j++) {// 주위 actionperform 에서는 x,y가
 													// 반대로 들어간다.
 				// map[i][j]
-
+				count = 0;
+				mineCount = 0;
 				mid = map[i][j];
 				if (i > 0 && i < map.length - 1 && j > 0 && j < map.length - 1) {
-					if (map[i][j] > 0 && map[i][j] < 9) {
-						for (int k = -1; k < 2; k++) {// 모르는 부분에 대한 갯수 파악
-							for (int l = -1; l < 2; l++) {
-								if (map[i + k][j + l] == 9) {
-									count++;
-									x.add(i + k);
-									y.add(j + l);
-									System.out.println("countUP " + count + " "
-											+ i + " " + j);
-
-								}
-								if (map[i + k][j + l] == 99) {
-									mineCount++;
-									System.out.println("mineCount " + mineCount
-											+ " " + i + " " + j);
-								}
-							}
+					if (map[i][j] != 0 && map[i][j] != 9) {
+						// 중점기준 모르는 부분 찾기
+						x = new ArrayList();
+						y = new ArrayList();
+						if (map[i - 1][j - 1] == 9) {
+							count++;
+							System.out.println("countUP " + count + " " + i
+									+ " " + j);
+							y.add(i - 1);
+							x.add(j - 1);
 						}
+						if (map[i - 1][j] == 9) {
+							count++;
+							System.out.println("countUP " + count + " " + i
+									+ " " + j);
+							y.add(i - 1);
+							x.add(j);
+						}
+						if (map[i - 1][j + 1] == 9) {
+							count++;
+							System.out.println("countUP " + count + " " + i
+									+ " " + j);
+							y.add(i - 1);
+							x.add(j + 1);
+						}
+						if (map[i][j - 1] == 9) {
+							count++;
+							System.out.println("countUP " + count + " " + i
+									+ " " + j);
+							y.add(i);
+							x.add(j - 1);
+						}
+						if (map[i][j + 1] == 9) {
+							count++;
+							System.out.println("countUP " + count + " " + i
+									+ " " + j);
+							y.add(i);
+							x.add(j + 1);
+						}
+						if (map[i + 1][j - 1] == 9) {
+							count++;
+							System.out.println("countUP " + count + " " + i
+									+ " " + j);
+							y.add(i + 1);
+							x.add(j - 1);
+						}
+						if (map[i + 1][j] == 9) {
+							count++;
+							System.out.println("countUP " + count + " " + i
+									+ " " + j);
+							y.add(i + 1);
+							x.add(j);
+						}
+						if (map[i + 1][j + 1] == 9) {
+							count++;
+							System.out.println("countUP " + count + " " + i
+									+ " " + j);
+							y.add(i + 1);
+							x.add(j + 1);
+						}
+						// 지뢰 갯수 찾기
+						if (map[i - 1][j - 1] == 99
+								|| map[i - 1][j] == 99
+								|| map[i - 1][j] == 99
+								|| map[i][j - 1] == 99
+								|| (map[i][j + 1] == 99
+										|| map[i + 1][j - 1] == 99
+										|| map[i + 1][j] == 99 || map[i + 1][j + 1] == 99)) {
+							mineCount++;
+							System.out.println("MinecountUP " + count + " " + i
+									+ " " + j);
+
+						}
+
+						// for (int k = -1; k < 2; k++) {// 모르는 부분에 대한 갯수 파악
+						// for (int l = -1; l < 2; l++) {
+						// if (map[i + k][j + l] == 9) {
+						// count++;
+						// x.add(i + k);
+						// y.add(j + l);
+						// System.out.println("countUP " + count + " "
+						// + i + " " + j);
+						// }
+						// if (map[i + k][j + l] == 99) {
+						// mineCount++;
+						// System.out.println("mineCount " + mineCount
+						// + " " + i + " " + j);
+						// }
+						// }
+						// }
+						ArrayList<Coordinate> temp = new ArrayList();
 						if ((count - mineCount) == mid) {
 							for (int n = 0; n < x.size(); n++) {
 								System.out.println(oracle.getRemainedMines());
-								updateMap(oracle.actionPerform(y.get(n),
-										x.get(1), 1));
+								System.out.println("위치 : " + j + " " + i);
+								System.out.println("지뢰 위치 : " + x.get(n) + " "
+										+ y.get(n));
+
+								temp = oracle.actionPerform(x.get(n), y.get(n),
+										1);
+								if (!temp.isEmpty())
+									updateMap(temp);
 								System.out.println("catch mines");
-								x.remove(n);
-								y.remove(n);
+
+								oracle.currentStatus();
+								viewMap();
 							}
-							oracle.currentStatus();
-							viewMap();
-						}
-						if (mineCount == mid) {
+							x = new ArrayList();
+							y = new ArrayList();
 
 						}
-						count = 0;
-						mineCount = 0;
+						if (mineCount == mid) {
+							for (int n = 0; n < x.size(); n++) {
+								updateMap(oracle.actionPerform(x.get(n),
+										y.get(n), 0));
+							}
+
+						}
+
 					}
 				}
 			}
@@ -123,7 +207,6 @@ public class test {
 	}
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		ArrayList<Coordinate> temp = new ArrayList<Coordinate>();
 		int x = 0;
 		int y = 0;
@@ -141,9 +224,11 @@ public class test {
 			oracle.currentStatus();
 			if (temp.size() > 3 || temp.isEmpty())
 				loop = false;
-
 		}
+
 		viewMap();
-		catchMines();
+		while (!oracle.isGameOver()) {
+			catchMines();
+		}
 	}
 }
