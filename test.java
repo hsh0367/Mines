@@ -56,6 +56,7 @@ public class test {
 						// 중점기준 모르는 부분 찾기
 						x = new ArrayList();
 						y = new ArrayList();
+						System.out.println(j + " "+i);
 						if (map[i - 1][j - 1] == 9) {
 							count++;
 							System.out.println("countUP " + count + " " + i
@@ -143,16 +144,17 @@ public class test {
 						// }
 						// }
 						ArrayList<Coordinate> temp = new ArrayList();
-						if ((count - mineCount) == mid) {
+						if (count == mid -mineCount) {
 							for (int n = 0; n < x.size(); n++) {
 								System.out.println(oracle.getRemainedMines());
 								System.out.println("위치 : " + j + " " + i);
-								System.out.println("지뢰 위치 : " + x.get(n) + " "
-										+ y.get(n));
+								System.out.println("지뢰 위치 : " + x.get(n) + " "+ y.get(n));
+								System.out.println("범위안에 지뢰 갯수 : "+mineCount);
+								System.out.println("범위안 모르는 갯수 : "+count);
 
 								temp = oracle.actionPerform(x.get(n), y.get(n),
 										1);
-								if (!temp.isEmpty())
+								if (!oracle.isGameOver())
 									updateMap(temp);
 								System.out.println("catch mines");
 
@@ -163,10 +165,11 @@ public class test {
 							y = new ArrayList();
 
 						}
-						if (mineCount == mid) {
+							if (mineCount == mid) {
 							for (int n = 0; n < x.size(); n++) {
-								updateMap(oracle.actionPerform(x.get(n),
-										y.get(n), 0));
+								temp = oracle.actionPerform(x.get(n), y.get(n),
+										0);
+								updateMap(temp);
 							}
 
 						}
@@ -222,13 +225,16 @@ public class test {
 			System.out.println(temp);
 			updateMap(temp);
 			oracle.currentStatus();
-			if (temp.size() > 3 || temp.isEmpty())
+			if (temp.size() > 3)
 				loop = false;
 		}
 
 		viewMap();
-		while (!oracle.isGameOver()) {
+//		while (!oracle.isGameOver() || oracle.getRemainedMines() !=0 ) {
+		for(int i=0;i<10;i++){
 			catchMines();
+			oracle.currentStatus();
 		}
+//		}
 	}
 }
