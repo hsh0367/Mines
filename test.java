@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import mineSweeper.*;
 
 public class test {
-	static Oracle oracle = new Oracle(1);
+	static Oracle oracle = new Oracle(0);
 	static int map[][] = new int[oracle.getBoardSize()][oracle.getBoardSize()];
 	static int mapSize = oracle.getBoardSize();
 
@@ -162,9 +162,7 @@ public class test {
 
 								temp = oracle.actionPerform(x.get(n), y.get(n),
 										1);
-								if (!oracle.isGameOver())
-									updateMap(temp);
-
+								System.out.println(temp);
 								oracle.currentStatus();
 							}
 
@@ -178,8 +176,6 @@ public class test {
 							for (int n = 0; n < x.size(); n++) {
 								temp = oracle.actionPerform(x.get(n), y.get(n),
 										0);
-								if (!oracle.isGameOver())
-									updateMap(temp);
 								oracle.currentStatus();
 							}
 						} else {
@@ -187,6 +183,9 @@ public class test {
 							System.out.println("누를 곳이 없습니다. ");
 							
 						}
+						if (!oracle.isGameOver())
+							updateMap(temp);
+
 					}
 
 				}
